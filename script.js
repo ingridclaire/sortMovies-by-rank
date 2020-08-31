@@ -62,6 +62,10 @@ window.onload = function() {
 
   // Display Movies list
   displayMovies(movies);
+  document.getElementById('rank-header').addEventListener('click', () => {
+    let sorted = sortMoviesByRank(movies);
+    displayMovies(sorted);
+  });
 }
 
 /**
@@ -70,7 +74,7 @@ window.onload = function() {
 */
 function displayMovies(movies){
   let table = "<table border='1' style='width: 100%'>";
-  table += "<tr><th>ID</th><th>Name</th><th>Rank</th></tr>";
+  table += "<tr><th>ID</th><th>Name</th><th id='rank-header'>Rank</th></tr>";
   for(let index=0; index<movies.length; index++){
       table += "<tr>";
       table += "<td>" + movies[index].id + "</td>";
@@ -89,26 +93,18 @@ function displayMovies(movies){
 * HINT: make sure you are comparing the right value in in if(...)
 * HINT: replace numbers with movies .
 */
-function sortMoviesByRank(numbers){
+function sortMoviesByRank(movieList){
 // Code from previous sortBestRatingsFirst() function
-for (let j = 0; j < numbers.length - 1; j++) {
-
-    let max_num = numbers[j];
-    let max_location = j;
-
-    for (let i = j; i < numbers.length; i++) {
-        if (numbers[i] > max_num) {
-            // Know max AND it's index (location)
-            max_num = numbers[i]
-            max_location = i
-        }
-    }
-    // swap the first and the last
-    numbers[max_location] = numbers[j] // --> 10
-    numbers[j] = max_num
-}
-
-return numbers
+  if (movieList.length === 0) {
+    return [];
+  }
+  let maxIndex = getMaxMovieObject(movieList, 'rank');
+  let max = movieList[maxIndex];
+  if (movieList[0].rank !== max.rank) {
+    movieList[maxIndex] = movieList[0];
+    movieList[0] = max;
+  }
+  return [movieList[0]].concat(sortMoviesByRank(movieList.slice(1)));
 }
 
 /**
@@ -124,19 +120,22 @@ function sortMoviesByAttr(movies, sortAttr){
 * Retrieve the max movie object based on attribute
 * HINT: make sure you are comparing the right attribute
 */
-function getMaxMovieObject(movies, start, sortAttr){
+function getMaxMovieObject(movieList, sortAttr){
 // Code from previous findMaxHelper() function
-let maximum = numbers[start];
-let max_location = start
+  let top = movieList[0];
+  let topIndex = 0;
 
-for (let i = start; i < numbers.length; i++) {
-    if (numbers[i] > maximum) {
-        maximum = numbers[i]
-        max_location = i
-    }
+  for (let i = 0; i < movieList.length; i++) {
+      if (movieList[i][sortAttr] > top[sortAttr]) {
+          top = movieList[i];
+          topIndex = i
+      }
+  }
+  return topIndex;
 }
-return {max_number: maximum, max_index: max_location}
-}
+
+// console.log(sortMoviesByRank(movies));
+
 
 
 
